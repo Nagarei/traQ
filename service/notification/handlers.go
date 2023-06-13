@@ -237,7 +237,7 @@ func messageCreatedHandler(ns *Service, ev hub.Message) {
 		viewers.Add(uid)
 		if swt.State > viewer.StateNone {
 			markedUsers.Remove(uid)   // 閲覧中ユーザーは未読管理から外す
-			notifiedUsers.Remove(uid) // 閲覧中ユーザーは通知から外す
+			//notifiedUsers.Remove(uid) // 閲覧中ユーザーは通知から外す
 		}
 	}
 
