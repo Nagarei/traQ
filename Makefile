@@ -89,3 +89,11 @@ down: ## Stop and remove app containers
 .PHONY: gogen
 gogen: ## Generate auto-generated go files
 	go generate ./...
+
+.PHONY: env
+env: ## Generate env files
+	git pull
+	echo -n > .env
+	echo "TRAQ_VERSION=$(git describe --tags --abbrev=0)" >> .env
+	echo "TRAQ_REVISION=$(git rev-parse --short HEAD)" >> .env
+	
