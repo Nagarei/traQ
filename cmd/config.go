@@ -51,9 +51,6 @@ type Config struct {
 		Enabled bool `mapstructure:"enabled" yaml:"enabled"`
 	} `mapstructure:"accessLog" yaml:"accessLog"`
 
-	// ImageMagick ImageMagick実行ファイルパス
-	ImageMagick string `mapstructure:"imagemagick" yaml:"imagemagick"`
-
 	// Imaging 画像処理設定
 	Imaging struct {
 		// MaxPixels 処理可能な最大画素数 (default: 2560*1600)
@@ -87,7 +84,12 @@ type Config struct {
 
 	// ES Elasticsearch設定
 	ES struct {
+		// URL URL (default: "")
 		URL string `mapstructure:"url" yaml:"url"`
+		// Username ユーザー名 (default: "elastic")
+		Username string `mapstructure:"username" yaml:"username"`
+		// Password パスワード (default: "password")
+		Password string `mapstructure:"password" yaml:"password"`
 	} `mapstructure:"es" yaml:"es"`
 
 	// Storage ファイルストレージ設定
@@ -258,7 +260,6 @@ func init() {
 	viper.SetDefault("gzip", true)
 	viper.SetDefault("allowSignUp", false)
 	viper.SetDefault("accessLog.enabled", true)
-	viper.SetDefault("imagemagick", "")
 	viper.SetDefault("imaging.maxPixels", 2560*1600)
 	viper.SetDefault("imaging.concurrency", 1)
 	viper.SetDefault("mariadb.host", "127.0.0.1")
@@ -270,6 +271,8 @@ func init() {
 	viper.SetDefault("mariadb.connection.maxIdle", 2)
 	viper.SetDefault("mariadb.connection.lifetime", 0)
 	viper.SetDefault("es.url", "")
+	viper.SetDefault("es.username", "elastic")
+	viper.SetDefault("es.password", "password")
 	viper.SetDefault("storage.type", "local")
 	viper.SetDefault("storage.local.dir", "./storage")
 	viper.SetDefault("storage.swift.username", "")
@@ -452,7 +455,9 @@ func provideFirebaseCredentialsFilePathString(c *Config) variable.FirebaseCreden
 
 func provideESEngineConfig(c *Config) search.ESEngineConfig {
 	return search.ESEngineConfig{
-		URL: c.ES.URL,
+		URL:      c.ES.URL,
+		Username: c.ES.Username,
+		Password: c.ES.Password,
 	}
 }
 
@@ -461,7 +466,6 @@ func provideImageProcessorConfig(c *Config) imaging.Config {
 		MaxPixels:        c.Imaging.MaxPixels,
 		Concurrency:      c.Imaging.Concurrency,
 		ThumbnailMaxSize: image.Pt(360, 480),
-		ImageMagickPath:  c.ImageMagick,
 	}
 }
 

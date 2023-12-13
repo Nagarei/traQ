@@ -10,7 +10,7 @@ import (
 
 	json "github.com/json-iterator/go"
 
-	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gofrs/uuid"
 	"go.uber.org/zap"
 
@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	esRequiredVersionPrefix = "7."
+	esRequiredVersionPrefix = "8."
 	esIndexPrefix           = "traq_"
 	esMessageIndex          = "message"
 	esDateFormat            = "2006-01-02T15:04:05.000000000Z"
@@ -34,6 +34,10 @@ func getIndexName(index string) string {
 type ESEngineConfig struct {
 	// URL ESのURL
 	URL string
+	// Username ESのユーザー名
+	Username string
+	// Password ESのパスワード
+	Password string
 }
 
 // esEngine search.Engine 実装
@@ -173,6 +177,8 @@ func NewESEngine(mm message.Manager, cm channel.Manager, repo repository.Reposit
 	// esクライアント作成
 	client, err := elasticsearch.NewClient(elasticsearch.Config{
 		Addresses: []string{config.URL},
+		Username:  config.Username,
+		Password:  config.Password,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to init Elasticsearch: %w", err)
@@ -408,7 +414,7 @@ func (e *esEngine) Do(q *Query) (Result, error) {
 }
 
 func (e *esEngine) Available() bool {
-	//このクライアントにはライフサイクルが無いので、常にtrueを返す。
+	// このクライアントにはライフサイクルが無いので、常にtrueを返す。
 	return true
 }
 
