@@ -1,8 +1,10 @@
 SOURCES ?= $(shell find . -type f \( -name "*.go" -o -name "go.mod" -o -name "go.sum" \) -print)
 
 TEST_DB_PORT := 3100
-TBLS_VERSION := v1.65.3
-SPECTRAL_VERSION := 6.2.1
+# renovate:image-tag imageName=ghcr.io/k1low/tbls
+TBLS_VERSION := "v1.72.1"
+# renovate:image-tag imageName=index.docker.io/stoplight/spectral
+SPECTRAL_VERSION := "6.11.0"
 
 .DEFAULT_GOAL := help
 
@@ -16,8 +18,8 @@ traQ: $(SOURCES) ## Build traQ binary
 .PHONY: init
 init: ## Download and install go mod dependencies
 	go mod download
-	go install github.com/google/wire/cmd/wire@latest
-	go install github.com/golang/mock/mockgen@latest
+	go install github.com/google/wire/cmd/wire@0.5.0
+	go install github.com/golang/mock/mockgen@v1.6.0
 
 .PHONY: genkey
 genkey: ## Generate dev keys
@@ -71,7 +73,8 @@ goreleaser-snapshot: ## Release dry-run
 .PHONY: update-frontend
 update-frontend: ## Update frontend files in dev/frontend
 	@mkdir -p ./dev/frontend
-	@curl -L -Ss https://github.com/traPtitech/traQ_S-UI/releases/latest/download/dist.tar.gz | tar zxv -C ./dev/frontend/ --strip-components=2
+# renovate:github-url
+	@curl -L -Ss https://github.com/traPtitech/traQ_S-UI/releases/download/v3.18.2/dist.tar.gz | tar zxv -C ./dev/frontend/ --strip-components=2
 
 .PHONY: reset-frontend
 reset-frontend: ## Completely replace frontend files in dev/frontend
