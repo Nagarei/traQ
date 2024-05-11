@@ -530,7 +530,7 @@ func TestHandlers_AuthorizationDecideHandler(t *testing.T) {
 				Scopes:       scopesReadWrite,
 				ValidScopes:  scopesRead,
 				State:        "state",
-				Types:        responseType{Code: true},
+				Types:        responseType{true, false, false},
 				AccessTime:   time.Now(),
 				Nonce:        "nonce",
 			},

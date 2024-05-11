@@ -3,7 +3,6 @@ package file
 import (
 	"bytes"
 	"errors"
-	"github.com/stretchr/testify/require"
 	"image/png"
 	"io"
 	"testing"
@@ -97,8 +96,7 @@ func TestManagerImpl_Save(t *testing.T) {
 
 		data := []byte("test text file")
 		hash := "7e6d5d7ae4965bfecc6d818f76eb832b"
-		thumb, err := imaging2.GenerateIcon("test")
-		require.NoError(t, err)
+		thumb := imaging2.GenerateIcon("test")
 		args := SaveArgs{
 			FileName:  "dummy.png",
 			FileSize:  int64(len(data)),
@@ -162,8 +160,7 @@ func TestManagerImpl_Save(t *testing.T) {
 
 		data := []byte("test text file")
 		hash := "7e6d5d7ae4965bfecc6d818f76eb832b"
-		thumb, err := imaging2.GenerateIcon("test")
-		require.NoError(t, err)
+		thumb := imaging2.GenerateIcon("test")
 		args := SaveArgs{
 			FileName:  "dummy.png",
 			FileSize:  int64(len(data)),
@@ -229,8 +226,7 @@ func TestManagerImpl_Save(t *testing.T) {
 
 		data := []byte("test text file")
 		hash := "7e6d5d7ae4965bfecc6d818f76eb832b"
-		thumb, err := imaging2.GenerateIcon("test")
-		require.NoError(t, err)
+		thumb := imaging2.GenerateIcon("test")
 		args := SaveArgs{
 			FileName:  "dummy.png",
 			FileSize:  int64(len(data)),

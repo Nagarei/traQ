@@ -14,7 +14,6 @@ var readPerms = []permission.Permission{
 	permission.ConnectNotificationStream,
 	permission.GetUser,
 	permission.GetMe,
-	permission.GetOIDCUserInfo,
 	permission.GetChannelStar,
 	permission.GetUnread,
 	permission.GetUserTag,

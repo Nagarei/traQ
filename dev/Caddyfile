@@ -10,8 +10,12 @@ root * /usr/share/caddy
 handle /api/* {
     reverse_proxy backend:3000
 }
+
 handle /.well-known/* {
-    reverse_proxy backend:3000
+    respond 404
+}
+handle /.well-known/change-password {
+    redir * /settings/session
 }
 
 handle {

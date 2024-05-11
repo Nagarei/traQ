@@ -20,7 +20,6 @@ var botPerms = []permission.Permission{
 	permission.EditChannelSubscription,
 	permission.GetUser,
 	permission.GetMe,
-	permission.GetOIDCUserInfo,
 	permission.EditMe,
 	permission.GetMyStampHistory,
 	permission.ChangeMyIcon,

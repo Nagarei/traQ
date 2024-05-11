@@ -48,7 +48,6 @@ func newRouter(hub2 *hub.Hub, db *gorm.DB, repo repository.Repository, ss *servi
 	wsStreamer := ss.BotWS
 	onlineCounter := ss.OnlineCounter
 	ogpService := ss.OGP
-	oidcService := ss.OIDC
 	viewerManager := ss.ViewerManager
 	webrtcv3Manager := ss.WebRTCv3
 	processor := ss.Imaging
@@ -63,7 +62,6 @@ func newRouter(hub2 *hub.Hub, db *gorm.DB, repo repository.Repository, ss *servi
 		Logger:         logger,
 		OC:             onlineCounter,
 		OGP:            ogpService,
-		OIDC:           oidcService,
 		VM:             viewerManager,
 		WebRTC:         webrtcv3Manager,
 		Imaging:        processor,
@@ -81,7 +79,6 @@ func newRouter(hub2 *hub.Hub, db *gorm.DB, repo repository.Repository, ss *servi
 		Repo:      repo,
 		Logger:    logger,
 		SessStore: store,
-		OIDC:      oidcService,
 		Config:    oauth2Config,
 	}
 	router := &Router{

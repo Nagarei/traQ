@@ -85,7 +85,6 @@ func newServer(hub2 *hub.Hub, db *gorm.DB, repo repository.Repository, fs storag
 	if err != nil {
 		return nil, err
 	}
-	oidcService := provideOIDCService(c2, repo, rbacRBAC)
 	esEngineConfig := provideESEngineConfig(c2)
 	engine, err := initSearchServiceIfAvailable(messageManager, manager, repo, logger, esEngineConfig)
 	if err != nil {
@@ -105,7 +104,6 @@ func newServer(hub2 *hub.Hub, db *gorm.DB, repo repository.Repository, fs storag
 		MessageManager:       messageManager,
 		Notification:         notificationService,
 		OGP:                  ogpService,
-		OIDC:                 oidcService,
 		RBAC:                 rbacRBAC,
 		Search:               engine,
 		ViewerManager:        viewerManager,
