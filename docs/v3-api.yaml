@@ -2896,6 +2896,25 @@ paths:
         指定したOAuth2クライアントの情報を変更します。
         対象のクライアントの管理権限が必要です。
         クライアント開発者UUIDを変更した場合は、変更先ユーザーにクライアント管理権限が移譲され、自分自身は権限を失います。
+  '/clients/{clientId}/tokens':
+    delete:
+      summary: OAuthクライアントのトークンを削除
+      parameters:
+        - $ref: '#/components/parameters/clientIdInPath'
+      responses:
+        '204':
+          description: |-
+            No Content
+            削除できました。
+        '404':
+          description: |-
+            Not Found
+            OAuth2クライアントが見つかりません。
+      tags:
+        - oauth2
+      operationId: revokeClientTokens
+      description: |-
+        自分が許可している指定したOAuthクライアントのアクセストークンを全てRevokeします。
   /clients:
     get:
       summary: OAuth2クライアントのリストを取得
@@ -4145,6 +4164,7 @@ paths:
     parameters:
       - schema:
           type: string
+          format: uuid
         name: userId
         in: path
         required: true
@@ -5544,7 +5564,7 @@ components:
         file:
           type: string
           format: binary
-          description: 'アイコン画像(1MBまでのpng, jpeg, gif)'
+          description: 'アイコン画像(2MBまでのpng, jpeg, gif)'
       required:
         - file
     PutMyPasswordRequest:
@@ -5848,12 +5868,16 @@ components:
           description: 要求スコープの配列
           items:
             $ref: '#/components/schemas/OAuth2Scope'
+        confidential:
+          type: boolean
+          description: confidential client なら true, public client なら false
       required:
         - id
         - name
         - description
         - developerId
         - scopes
+        - confidential
     PatchClientRequest:
       title: PatchClientRequest
       type: object
@@ -5876,6 +5900,9 @@ components:
           type: string
           description: クライアント開発者UUID
           format: uuid
+        confidential:
+          type: boolean
+          description: confidential client なら true, public client なら false
     OAuth2ClientDetail:
       title: OAuth2ClientDetail
       description: OAuth2クライアント詳細情報
@@ -5909,6 +5936,9 @@ components:
         secret:
           type: string
           description: クライアントシークレット
+        confidential:
+          type: boolean
+          description: confidential client なら true, public client なら false
       required:
         - id
         - developerId
@@ -5917,6 +5947,7 @@ components:
         - scopes
         - callbackUrl
         - secret
+        - confidential
     PostClientRequest:
       title: PostClientRequest
       type: object
@@ -5940,6 +5971,10 @@ components:
           type: string
           description: 説明
           maxLength: 1000
+        confidential:
+          type: boolean
+          description: confidential client なら true, public cleint なら false
+          default: false
       required:
         - name
         - callbackUrl
@@ -6063,6 +6098,10 @@ components:
           uniqueItems: false
           items:
             type: string
+        bio:
+          type: string
+          description: 自己紹介(biography)
+          maxLength: 1000
     BotTokens:
       title: BotTokens
       type: object
@@ -6144,6 +6183,7 @@ components:
         - endpoint
         - privileged
         - channels
+        - bio
     BotEventLog:
       title: BotEventLog
       type: object
@@ -6997,6 +7037,7 @@ components:
         - edit_stamp
         - edit_stamp_created_by_others
         - delete_stamp
+        - delete_my_stamp
         - add_message_stamp
         - remove_message_stamp
         - get_my_stamp_history
@@ -7080,6 +7121,7 @@ components:
         - EditStamp
         - EditStampCreatedByOthers
         - DeleteStamp
+        - DeleteMyStamp
         - AddMessageStamp
         - RemoveMessageStamp
         - GetMyStampHistory
@@ -7161,17 +7203,7 @@ components:
           type: array
           description: セッションの配列
           items:
-            type: object
-            properties:
-              state:
-                type: string
-                description: 状態
-              sessionId:
-                type: string
-                description: セッションID
-            required:
-              - state
-              - sessionId
+            $ref: '#/components/schemas/Session'
       required:
         - userId
         - channelId
@@ -7284,6 +7316,18 @@ components:
           description: メッセージ引用通知の設定情報
       required:
         - notifyCitation
+    Session:
+      type: object
+      properties:
+        state:
+          type: string
+          description: 状態
+        sessionId:
+          type: string
+          description: セッションID
+      required:
+        - state
+        - sessionId
   headers:
     X-TRAQ-MORE:
       schema:

@@ -80,6 +80,7 @@ func (h *Handlers) Setup(e *echo.Group) {
 	requiresChannelAccessPerm := middlewares.CheckChannelAccessPerm(h.ChannelManager)
 	requiresGroupAdminPerm := middlewares.CheckUserGroupAdminPerm(h.RBAC)
 	requiresClipFolderAccessPerm := middlewares.CheckClipFolderAccessPerm()
+	requiresDeleteStampPerm := middlewares.CheckDeleteStampPerm(h.RBAC)
 
 	api := e.Group("/v3", middlewares.UserAuthenticate(h.Repo, h.SessStore))
 	{
@@ -245,7 +246,7 @@ func (h *Handlers) Setup(e *echo.Group) {
 			{
 				apiStampsSID.GET("", h.GetStamp, requires(permission.GetStamp))
 				apiStampsSID.PATCH("", h.EditStamp, requires(permission.EditStamp))
-				apiStampsSID.DELETE("", h.DeleteStamp, requires(permission.DeleteStamp))
+				apiStampsSID.DELETE("", h.DeleteStamp, requiresDeleteStampPerm)
 				apiStampsSID.GET("/stats", h.GetStampStats, requires(permission.GetStamp))
 				apiStampsSID.GET("/image", h.GetStampImage, requires(permission.GetStamp, permission.DownloadFile))
 				apiStampsSID.PUT("/image", h.ChangeStampImage, requires(permission.EditStamp))
@@ -320,6 +321,7 @@ func (h *Handlers) Setup(e *echo.Group) {
 				apiClientsCID.GET("", h.GetClient, requires(permission.GetClients))
 				apiClientsCID.PATCH("", h.EditClient, requiresClientAccessPerm, requires(permission.EditMyClient))
 				apiClientsCID.DELETE("", h.DeleteClient, requiresClientAccessPerm, requires(permission.DeleteMyClient))
+				apiClientsCID.DELETE("/tokens", h.RevokeClientTokens, requires(permission.RevokeMyToken))
 			}
 		}
 		apiBots := api.Group("/bots")
