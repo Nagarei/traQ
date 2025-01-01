@@ -194,6 +194,7 @@ func (h *Handlers) Setup(e *echo.Group) {
 				apiChannelsCID.PATCH("/subscribers", h.EditChannelSubscribers, requires(permission.EditChannelSubscription))
 				apiChannelsCID.GET("/bots", h.GetChannelBots, requires(permission.GetChannel))
 				apiChannelsCID.GET("/events", h.GetChannelEvents, requires(permission.GetChannel))
+				apiChannelsCID.GET("/path", h.GetChannelPath, requires(permission.GetChannel))
 			}
 		}
 		apiMessages := api.Group("/messages")
@@ -290,6 +291,7 @@ func (h *Handlers) Setup(e *echo.Group) {
 				{
 					apiGroupsGIDMembers.GET("", h.GetUserGroupMembers, requires(permission.GetUserGroup))
 					apiGroupsGIDMembers.POST("", h.AddUserGroupMember, requiresGroupAdminPerm, requires(permission.EditUserGroup))
+					apiGroupsGIDMembers.DELETE("", h.RemoveUserGroupMembers, requiresGroupAdminPerm, requires(permission.EditUserGroup))
 					apiGroupsGIDMembersUID := apiGroupsGIDMembers.Group("/:userID", requiresGroupAdminPerm)
 					{
 						apiGroupsGIDMembersUID.PATCH("", h.EditUserGroupMember, requires(permission.EditUserGroup))
