@@ -20,6 +20,7 @@ import (
 	"gorm.io/gorm"
 
 	driverMysql "github.com/go-sql-driver/mysql"
+
 	"github.com/traPtitech/traQ/migration"
 	"github.com/traPtitech/traQ/model"
 	"github.com/traPtitech/traQ/repository"
@@ -331,10 +332,16 @@ func (env *Env) CreateMessage(t *testing.T, userID, channelID uuid.UUID, text st
 	return m
 }
 
+// DeleteMessage メッセージを必ず削除します
+func (env *Env) DeleteMessage(t *testing.T, messageID uuid.UUID) {
+	t.Helper()
+	require.NoError(t, env.MM.Delete(messageID))
+}
+
 // MakeMessageUnread 指定したメッセージを未読にします
 func (env *Env) MakeMessageUnread(t *testing.T, userID, messageID uuid.UUID) {
 	t.Helper()
-	require.NoError(t, env.Repository.SetMessageUnread(userID, messageID, false))
+	require.NoError(t, env.Repository.SetMessageUnreads(map[uuid.UUID]bool{userID: false}, messageID))
 }
 
 // CreateStamp スタンプを必ず作成します

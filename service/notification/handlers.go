@@ -15,6 +15,7 @@ import (
 	"github.com/traPtitech/traQ/model"
 	"github.com/traPtitech/traQ/repository"
 	"github.com/traPtitech/traQ/service/fcm"
+	"github.com/traPtitech/traQ/service/qall"
 	"github.com/traPtitech/traQ/service/viewer"
 	"github.com/traPtitech/traQ/service/ws"
 	"github.com/traPtitech/traQ/utils/message"
@@ -246,11 +247,13 @@ func messageCreatedHandler(ns *Service, ev hub.Message) {
 
 	// 未読追加
 	markedUsers.Remove(m.UserID)
-	for id := range markedUsers {
-		err := ns.repo.SetMessageUnread(id, m.ID, noticeable.Contains(id))
-		if err != nil {
-			logger.Error("failed to SetMessageUnread", zap.Error(err), zap.Stringer("user_id", id)) // 失敗
-		}
+
+	userNoticeableMap := map[uuid.UUID]bool{}
+	for uid := range markedUsers {
+		userNoticeableMap[uid] = noticeable.Contains(uid)
+	}
+	if err := ns.repo.SetMessageUnreads(userNoticeableMap, m.ID); err != nil {
+		logger.Error("failed to SetMessageUnreads", zap.Error(err), zap.Stringer("message_id", m.ID)) // 失敗
 	}
 
 	// WS送信
@@ -612,8 +615,7 @@ func qallRoomStateChangedHandler(ns *Service, ev hub.Message) {
 	broadcast(ns,
 		"QALL_ROOM_STATE_CHANGED",
 		map[string]interface{}{
-			"room_id": ev.Fields["room_id"].(uuid.UUID),
-			"state":   ev.Fields["state"],
+			"roomStates": ev.Fields["roomStates"].([]qall.RoomWithParticipants),
 		},
 	)
 }
