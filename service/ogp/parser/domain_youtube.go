@@ -30,8 +30,8 @@ type OEmbedResponse struct {
 	Height          uint64 `json:"height"`
 }
 
-func FetchYoutubeInfo(url *url.URL) (*opengraph.OpenGraph, *DefaultPageMeta, error) {
-	requestURL := fmt.Sprintf("https://www.youtube.com/oembed?url=%s", url.EscapedPath())
+func FetchYoutubeInfo(u *url.URL) (*opengraph.OpenGraph, *DefaultPageMeta, error) {
+	requestURL := fmt.Sprintf("https://www.youtube.com/oembed?url=%s", url.PathEscape(u.String()))
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, nil, err
@@ -58,7 +58,7 @@ func FetchYoutubeInfo(url *url.URL) (*opengraph.OpenGraph, *DefaultPageMeta, err
 
 	og := opengraph.OpenGraph{
 		Type:        "video.other",
-		URL:         url.String(),
+		URL:         u.String(),
 		Title:       data.Title,
 		Description: data.AuthorName,
 		Images: []*image.Image{{
