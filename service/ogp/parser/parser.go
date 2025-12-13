@@ -41,7 +41,10 @@ func ParseMetaForURL(url *url.URL) (*opengraph.OpenGraph, *DefaultPageMeta, erro
 	}
 
 	req.Header.Add("user-agent", userAgent)
-
+	switch url.Host {
+	case "www.youtube.com", "youtube.com", "youtu.be":
+		req.Header.Set("user-agent", "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php); traq-ogp-fetcher; contact: github.com/traPtitech/traQ")
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, nil, ErrNetwork
