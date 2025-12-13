@@ -21,6 +21,9 @@ func FetchSpecialDomainInfo(url *url.URL) (og *opengraph.OpenGraph, meta *Defaul
 	case "vrchat.com":
 		og, meta, err = FetchVRChatInfo(url)
 		return og, meta, true, err
+	case "www.youtube.com":
+		og, meta, err = FetchYoutubeInfo(url)
+		return og, meta, true, err
 	}
 	return nil, nil, false, nil
 }
