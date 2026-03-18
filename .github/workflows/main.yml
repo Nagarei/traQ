@@ -8,18 +8,21 @@ on:
       - 'renovate/**'
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version-file: "./go.mod"
       - run: go mod download
       - run: make traQ
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: traQ
           path: traQ
@@ -27,12 +30,12 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version-file: "./go.mod"
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
           args: '--timeout 10m0s'
@@ -42,14 +45,14 @@ jobs:
     needs: [build]
     services:
       mysql:
-        image: mariadb:10.11.14
+        image: mariadb:10.11.16
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         env:
           MYSQL_ROOT_PASSWORD: password
         ports:
           - 3306:3306
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version-file: "./go.mod"
@@ -72,7 +75,7 @@ jobs:
     needs: [build]
     services:
       mysql:
-        image: mariadb:10.11.14
+        image: mariadb:10.11.16
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         env:
           MYSQL_ROOT_PASSWORD: password
@@ -80,8 +83,8 @@ jobs:
         ports:
           - 3306:3306
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v5
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           name: traQ
       - uses: k1low/setup-tbls@v1
