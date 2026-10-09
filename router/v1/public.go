@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/motoki317/sc"
 
 	"github.com/traPtitech/traQ/repository"
@@ -19,7 +19,7 @@ import (
 )
 
 // GetPublicUserIcon GET /public/icon/{username}
-func (h *Handlers) GetPublicUserIcon(c echo.Context) error {
+func (h *Handlers) GetPublicUserIcon(c *echo.Context) error {
 	username := c.Param("username")
 
 	// ユーザー取得
@@ -59,7 +59,7 @@ func (h *Handlers) GetPublicUserIcon(c echo.Context) error {
 }
 
 // GetPublicEmojiJSON GET /public/emoji.json
-func (h *Handlers) GetPublicEmojiJSON(c echo.Context) error {
+func (h *Handlers) GetPublicEmojiJSON(c *echo.Context) error {
 	emojiJSON, err := h.EmojiCache.json.Get(context.Background(), struct{}{})
 	if err != nil {
 		return herror.InternalServerError(err)
@@ -68,7 +68,7 @@ func (h *Handlers) GetPublicEmojiJSON(c echo.Context) error {
 }
 
 // GetPublicEmojiCSS GET /public/emoji.css
-func (h *Handlers) GetPublicEmojiCSS(c echo.Context) error {
+func (h *Handlers) GetPublicEmojiCSS(c *echo.Context) error {
 	emojiCSS, err := h.EmojiCache.css.Get(context.Background(), struct{}{})
 	if err != nil {
 		return herror.InternalServerError(err)
@@ -77,7 +77,7 @@ func (h *Handlers) GetPublicEmojiCSS(c echo.Context) error {
 }
 
 // GetPublicEmojiImage GET /public/emoji/{stampID}
-func (h *Handlers) GetPublicEmojiImage(c echo.Context) error {
+func (h *Handlers) GetPublicEmojiImage(c *echo.Context) error {
 	s := getStampFromContext(c)
 
 	meta, err := h.FileManager.Get(c.Request().Context(), s.FileID)
@@ -123,8 +123,8 @@ func emojiJSONGenerator(repo repository.Repository) func(ctx context.Context, _ 
 			return nil, err
 		}
 
-		stampNames := make([]string, len(stamps))
-		for i, stamp := range stamps {
+		stampNames := make([]string, len(stamps.Value()))
+		for i, stamp := range stamps.Value() {
 			stampNames[i] = stamp.Name
 		}
 
@@ -151,7 +151,7 @@ func emojiCSSGenerator(repo repository.Repository) func(ctx context.Context, _ s
 		buf.WriteString(".s16{width:16px;height:16px}")
 		buf.WriteString(".s24{width:24px;height:24px}")
 		buf.WriteString(".s32{width:32px;height:32px}")
-		for _, stamp := range stamps {
+		for _, stamp := range stamps.Value() {
 			fmt.Fprintf(&buf, ".emoji.e_%s{background-image:url(/api/1.0/public/emoji/%s)}", stamp.Name, stamp.ID)
 		}
 		return buf.Bytes(), nil

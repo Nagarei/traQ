@@ -24,7 +24,7 @@ func TestRepositoryImpl_CreateStamp(t *testing.T) {
 	t.Run("nil file id", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: random2.AlphaNumeric(20), FileID: uuid.Nil, CreatorID: user.GetID()})
+		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: "stamp_" + random2.AlphaNumeric(20), FileID: uuid.Nil, CreatorID: user.GetID()})
 		assert.Error(t, err)
 	})
 
@@ -38,14 +38,14 @@ func TestRepositoryImpl_CreateStamp(t *testing.T) {
 	t.Run("file not found(UUIDv4)", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: random2.AlphaNumeric(20), FileID: uuid.Must(uuid.NewV4()), CreatorID: user.GetID()})
+		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: "stamp_" + random2.AlphaNumeric(20), FileID: uuid.Must(uuid.NewV4()), CreatorID: user.GetID()})
 		assert.Error(t, err)
 	})
 
 	t.Run("file not found(UUIDv7)", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: random2.AlphaNumeric(20), FileID: uuid.Must(uuid.NewV7()), CreatorID: user.GetID()})
+		_, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: "stamp_" + random2.AlphaNumeric(20), FileID: uuid.Must(uuid.NewV7()), CreatorID: user.GetID()})
 		assert.Error(t, err)
 	})
 
@@ -61,7 +61,7 @@ func TestRepositoryImpl_CreateStamp(t *testing.T) {
 		t.Parallel()
 		assert := assert.New(t)
 
-		name := random2.AlphaNumeric(20)
+		name := "stamp_" + random2.AlphaNumeric(20)
 		s, err := repo.CreateStamp(context.TODO(), repository.CreateStampArgs{Name: name, FileID: fid, CreatorID: user.GetID()})
 		if assert.NoError(err) {
 			assert.NotEmpty(s.ID)
@@ -142,7 +142,7 @@ func TestRepositoryImpl_UpdateStamp(t *testing.T) {
 
 		s := mustMakeStamp(t, repo, rand, uuid.Nil)
 		newFile := mustMakeDummyFile(t, repo, false).ID
-		newName := random2.AlphaNumeric(20)
+		newName := "stamp_" + random2.AlphaNumeric(20)
 
 		if assert.NoError(repo.UpdateStamp(context.TODO(), s.ID, repository.UpdateStampArgs{
 			Name:      optional.From(newName),
@@ -248,13 +248,13 @@ func TestRepositoryImpl_GetAllStampsWithThumbnail(t *testing.T) {
 
 	t.Run("without thumbnail", func(t *testing.T) {
 		t.Parallel()
-		arr, err := repo.GetAllStampsWithThumbnail(context.TODO(), repository.StampTypeAll)
+		stamps, err := repo.GetAllStampsWithThumbnail(context.TODO(), repository.StampTypeAll)
 		if !assert.NoError(err) {
 			t.FailNow()
 		}
-		assert.Len(arr, n*2)
+		assert.Len(stamps.Value(), n*2)
 		cnt := 0
-		for _, s := range arr {
+		for _, s := range stamps.Value() {
 			if !s.HasThumbnail {
 				cnt++
 			}
@@ -263,13 +263,13 @@ func TestRepositoryImpl_GetAllStampsWithThumbnail(t *testing.T) {
 	})
 	t.Run("with thumbnail", func(t *testing.T) {
 		t.Parallel()
-		arr, err := repo.GetAllStampsWithThumbnail(context.TODO(), repository.StampTypeAll)
+		stamps, err := repo.GetAllStampsWithThumbnail(context.TODO(), repository.StampTypeAll)
 		if !assert.NoError(err) {
 			t.FailNow()
 		}
-		assert.Len(arr, n*2)
+		assert.Len(stamps.Value(), n*2)
 		cnt := 0
-		for _, s := range arr {
+		for _, s := range stamps.Value() {
 			if s.HasThumbnail {
 				cnt++
 			}
